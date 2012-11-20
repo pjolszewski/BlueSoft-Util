@@ -129,7 +129,7 @@ public final class CQuery {
 
 		@Override
 		public boolean any() {
-			return collection.isEmpty();
+			return !collection.isEmpty();
 		}
 
 		@Override

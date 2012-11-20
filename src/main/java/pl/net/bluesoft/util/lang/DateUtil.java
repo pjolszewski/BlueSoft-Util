@@ -3,6 +3,7 @@ package pl.net.bluesoft.util.lang;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * User: POlszewski
@@ -338,4 +339,85 @@ public final class DateUtil {
     public static boolean beforeInclusive(Date date, Date dateTo) {
         return date.before(dateTo) || date.equals(dateTo);
     }
+
+	public static Iterable<Date> dayIterator(Date from, Date to) {
+		return dayIterator(from, to, 1);
+	}
+
+	public static Iterable<Date> dayIterator(Date from, Date to, int amount) {
+		return new TimePeriodIterable(from, to, Calendar.DATE, amount);
+	}
+
+	public static Iterable<Date> hourIterator(Date from, Date to) {
+		return hourIterator(from, to, 1);
+	}
+
+	public static Iterable<Date> hourIterator(Date from, Date to, int amount) {
+		return new TimePeriodIterable(from, to, Calendar.HOUR, amount);
+	}
+
+	public static Iterable<Date> minuteIterator(Date from, Date to) {
+		return minuteIterator(from, to, 1);
+	}
+
+	public static Iterable<Date> minuteIterator(Date from, Date to, int amount) {
+		return new TimePeriodIterable(from, to, Calendar.MINUTE, amount);
+	}
+
+	public static Iterable<Date> secondIterator(Date from, Date to) {
+		return secondIterator(from, to, 1);
+	}
+
+	public static Iterable<Date> secondIterator(Date from, Date to, int amount) {
+		return new TimePeriodIterable(from, to, Calendar.SECOND, amount);
+	}
+
+	private static class TimePeriodIterable implements Iterable<Date> {
+		private Calendar from;
+		private Calendar to;
+		private int calendarTimeUnit;
+		private int unitAmount;
+
+		public TimePeriodIterable(Date from, Date to, int calendarTimeUnit, int unitAmount) {
+			this.from = Calendar.getInstance();
+			this.from.setTime(from);
+			this.to = Calendar.getInstance();
+			this.to.setTime(to);
+			this.calendarTimeUnit = calendarTimeUnit;
+			this.unitAmount = unitAmount;
+		}
+
+		@Override
+		public Iterator<Date> iterator() {
+			return new DateIterator();
+		}
+
+		private class DateIterator extends TimePeriodIterator<Date> {
+			@Override
+			protected Date getTime() {
+				return from.getTime();
+			}
+		}
+
+		private abstract class TimePeriodIterator<T> implements Iterator<T> {
+			@Override
+			public boolean hasNext() {
+				return from.before(to) || from.equals(to);
+			}
+
+			@Override
+			public T next() {
+				T result = getTime();
+				from.add(calendarTimeUnit, unitAmount);
+				return result;
+			}
+
+			protected abstract T getTime();
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		}
+	}
 }

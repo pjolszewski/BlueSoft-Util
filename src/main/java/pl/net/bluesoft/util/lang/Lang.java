@@ -3,6 +3,7 @@ package pl.net.bluesoft.util.lang;
 import org.apache.commons.beanutils.PropertyUtils;
 import pl.net.bluesoft.util.lang.exception.UtilityInvocationException;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -193,5 +194,37 @@ public final class Lang {
 			value = to;
 		}
 		return value;
+	}
+
+	public static byte[] noCopy(byte[] t) {
+		return t;
+	}
+
+	public static <T> T[] noCopy(T[] t) {
+		return t;
+	}
+
+	public static String[] toStringArray(Collection<String> collection) {
+		if (collection != null) {
+			return collection.toArray(new String[collection.size()]);
+		}
+		return null;
+	}
+
+	public static <T> T[] toObjectArray(Collection<T> collection, Class<T> clazz) {
+		if (collection != null) {
+			return collection.toArray((T[])Array.newInstance(clazz, collection.size()));
+		}
+		return null;
+	}
+
+	public static <T> T assumeType(Object obj, Class<T> clazz) {
+		if (obj == null) {
+			return null;
+		}
+		if (clazz.isAssignableFrom(obj.getClass())) {
+			return (T)obj;
+		}
+		throw new ClassCastException("Unable to cast " + obj.getClass() + " to " + clazz);
 	}
 }
